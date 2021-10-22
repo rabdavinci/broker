@@ -1,0 +1,16 @@
+syntax = "proto3";
+option go_package = "github.com/rabdavinci/broker/broker/data/proto";
+
+
+service Message {
+  rpc Message(Request) returns (Response) {}
+}
+
+message Request {
+  string topic = 1;
+  string content = 2;
+}
+
+message Response {
+  bool result = 1;
+}
