@@ -35,5 +35,5 @@ $ go run producer/main.go
 4. Add tests
 5. Dockerize, move configurations to `ENV` or `YML`
 6. Configure `CI/CD`
-7. Add Scalability. Improve broker
+7. Optimize broker. Add Scalability
 8. Add documentation
