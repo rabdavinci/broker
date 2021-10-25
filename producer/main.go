@@ -4,8 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/rabdavinci/broker/broker/data"
-	"github.com/rabdavinci/broker/broker/data/proto"
+	"github.com/rabdavinci/broker/broker/proto"
 	"google.golang.org/grpc"
 )
 
@@ -18,11 +17,8 @@ func main() {
 	defer conn.Close()
 
 	c := proto.NewMessageClient(conn)
-	message := data.Message{
-		Topic:   "qqq",
-		Content: "qqq",
-	}
-	res, err := c.Message(context.Background(), message)
+
+	res, err := c.Message(context.Background(), &proto.Request{Topic: "test", Content: "Message"})
 
 	if err != nil {
 		log.Fatal(err)

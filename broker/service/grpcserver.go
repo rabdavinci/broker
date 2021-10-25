@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/rabdavinci/broker/broker/data/proto"
+	"github.com/rabdavinci/broker/broker/proto"
 )
 
 type GRPCServer struct {

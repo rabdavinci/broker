@@ -5,36 +5,23 @@ import (
 	"net"
 	"time"
 
-	"github.com/rabdavinci/broker/broker/data/proto"
+	"github.com/rabdavinci/broker/broker/data"
+	"github.com/rabdavinci/broker/broker/proto"
 	"github.com/rabdavinci/broker/broker/service"
-	"go-micro.dev/v4/broker"
-	"go-micro.dev/v4/cmd"
+	"github.com/streadway/amqp"
 	"google.golang.org/grpc"
 )
 
+func failOnError(err error, msg string) {
+	if err != nil {
+		log.Fatalf("%s: %s", msg, err)
+	}
+}
+
 func main() {
-
-	cmd.Init()
-	// var cfg config.Config
-
-	// if err := env.Parse(&cfg); err != nil {
-	// 	log.Fatalf("parse config error with: %v", err)
-	// }
-	// if err := cfg.Validate(); err != nil {
-	// 	log.Fatalf("validate config error with: %v", err)
-	// }
-
-	if err := broker.Init(); err != nil {
-		log.Fatalf("Broker Init error: %v", err)
-	}
-	if err := broker.Connect(); err != nil {
-		log.Fatalf("Broker Connect error: %v", err)
-	}
-
+	// GRPS SERVER SECTION START
 	s := grpc.NewServer()
 	srv := &service.GRPCServer{}
-
-	proto.RegisterMessageServer(s, srv)
 
 	// cfg.GRPCAddress = "8080"
 	l, err := net.Listen("tcp", ":8080")
@@ -46,6 +33,19 @@ func main() {
 	if err = s.Serve(l); err != nil {
 		log.Fatalf("unable to start grpc server: %v", err)
 	}
+	// GRPS SERVER SECTION END
 
-	<-time.After(time.Second * 20)
+	// RabbitMQ INIT START
+
+	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	failOnError(err, "Failed to connect to RabbitMQ")
+	defer conn.Close()
+
+	brokerRepo := data.Broker(conn)
+
+	domainService := data.NewService(brokerRepo)
+
+	proto.RegisterMessageServer(s, srv, domainService)
+	// RabbitMQ INIT END
+	<-time.After(time.Second * 200)
 }

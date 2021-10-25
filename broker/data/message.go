@@ -1,4 +1,4 @@
-package service
+package data
 
 type Message struct {
 	Topic   string

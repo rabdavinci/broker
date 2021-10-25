@@ -1,5 +1,6 @@
 syntax = "proto3";
-option go_package = "github.com/rabdavinci/broker/broker/data/proto";
+package service;
+option go_package = "./proto";
 
 
 service Message {
